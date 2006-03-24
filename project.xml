@@ -3,9 +3,9 @@
 <project>
 	<pomVersion>3</pomVersion>
 	<extend>../../master/project.xml</extend>
-	<name>sakai-webapp-api</name>
+	<name>sakai-courier-api</name>
 	<groupId>sakaiproject</groupId>
-	<id>sakai-webapp-api</id>
+	<id>sakai-courier-api</id>
 	<currentVersion>${sakai.version}</currentVersion>
 	<organization>
 		<name>The Sakai Foundation</name>
@@ -22,7 +22,6 @@
 
 	<dependencies>
 
-		<!-- to be able to access the Sakai component manager -->
 		<dependency>
 			<groupId>sakaiproject</groupId>
 			<artifactId>sakai-component</artifactId>
