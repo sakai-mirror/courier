@@ -128,13 +128,13 @@ public class BasicCourierService implements CourierService
 
 		    // create if needed
 		    if (deliveries == null) {
-			deliveries = new ArrayList<Delivery>();
+				deliveries = new ArrayList<Delivery>();
+				m_addresses.put(address, deliveries);
 		    }
 
 		    // if this doesn't exist in the list already, add it
 		    if (!deliveries.contains(delivery)) {
-			deliveries.add(delivery);
-			m_addresses.put(address, deliveries);
+		    	deliveries.add(delivery);
 		    }
 		}
 	}
@@ -214,9 +214,9 @@ public class BasicCourierService implements CourierService
 		    // find the entry in m_addresses
 		    deliveries = m_addresses.get(address);
 		    if (deliveries == null) { // if null, return something
-			return Collections.EMPTY_LIST; // this should return null!
+		    	return Collections.EMPTY_LIST; // this should return null!
 		    } else {
-			m_addresses.remove(address);
+		    	m_addresses.remove(address);
 		    }
 		}
 
