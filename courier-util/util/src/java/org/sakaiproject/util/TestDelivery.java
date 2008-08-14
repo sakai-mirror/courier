@@ -21,6 +21,8 @@
 
 package org.sakaiproject.util;
 
+import org.sakaiproject.chat2.tool.ChatDelivery;
+
 /**
  * <p>
  * TestDelivery is a simple Delivery class for automated testing.
@@ -62,4 +64,27 @@ public class TestDelivery extends BaseDelivery
 	{
 		return super.toString() + " : " + m_message;
 	} // toString
-}
+
+	/**
+	 * Display.
+	 */
+	public String getMessage()
+	{
+		return m_message;
+	} // toString
+	
+	
+	/**
+	 * Are these the same?
+	 * 
+	 * @return true if obj is the same Delivery as this one.
+	 */
+	public boolean equals(Object obj)
+	{
+		if (!super.equals(obj)) return false;
+
+		TestDelivery cob = (TestDelivery) obj;
+		if (StringUtil.different(cob.getMessage(), getMessage() )) return false;
+
+		return true;
+	}}
