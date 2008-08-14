@@ -21,8 +21,6 @@
 
 package org.sakaiproject.util;
 
-import org.sakaiproject.chat2.tool.ChatDelivery;
-
 /**
  * <p>
  * TestDelivery is a simple Delivery class for automated testing.
