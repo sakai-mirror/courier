@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.courier.api.CourierService;
 import org.sakaiproject.courier.api.Delivery;
+import org.sakaiproject.util.StringUtil;
 
 /**
  * <p>
@@ -165,7 +166,7 @@ public class BasicCourierService implements CourierService
 		    // remove any Deliveries with this elementId
 		    for (Iterator<Delivery> it = deliveries.iterator(); it.hasNext();) {
 			Delivery delivery = it.next();
-			if (delivery.getElement().equals(elementId)) {
+			if (!StringUtil.different(delivery.getElement(), elementId)) {
 			    it.remove();
 			}
 		    }
