@@ -35,13 +35,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.courier.api.Delivery;
 import org.sakaiproject.courier.cover.CourierService;
 import org.sakaiproject.presence.cover.PresenceService;
 import org.sakaiproject.thread_local.cover.ThreadLocalManager;
 import org.sakaiproject.tool.api.Session;
-import org.sakaiproject.tool.cover.SessionManager;
+import org.sakaiproject.tool.api.SessionManager;
 
 /**
  * <p>
@@ -53,6 +54,9 @@ public class CourierTool extends HttpServlet
 	/** Our log (commons). */
 	private static Log M_log = LogFactory.getLog(CourierTool.class);
 
+	private SessionManager sessionManager = (SessionManager)
+			ComponentManager.get(SessionManager.class);
+	
 	/**
 	 * Shutdown the servlet.
 	 */
@@ -77,13 +81,11 @@ public class CourierTool extends HttpServlet
 	{
 		// support two "/" separated parameters [1] and [2]) - both get presence updated, the first is the address for delivery (second optional)
 		String[] parts = req.getPathInfo().split("/");
+		
 		if ((parts.length == 2) || (parts.length == 3))
 		{
 			String placementId = parts[1];
-
-			// get the Sakai session
-			Session session = SessionManager.getCurrentSession();
-
+			
 			// if we are in a newly created session where we had an invalid (presumed timed out) session in the request,
 			// send script to cause a sakai top level redirect
 			if (ThreadLocalManager.get(SessionManager.CURRENT_INVALID_SESSION) != null)
@@ -95,25 +97,33 @@ public class CourierTool extends HttpServlet
 
 			else
 			{
-				// compute our courier delivery address: this placement in this session
-				String deliveryId = session.getId() + placementId;
-
-				// find all deliveries for the requested deivery address
-				List deliveries = CourierService.getDeliveries(deliveryId);
-
-				// form the reply
-				sendDeliveries(res, deliveries);
-
-				// refresh our presence at the location (placement)
-				if (M_log.isDebugEnabled()) M_log.debug("setting presence: " + placementId);
-				PresenceService.setPresence(placementId);
-
-				// register another presence if present
-				if (parts.length == 3)
-				{
-					String secondPlacementId = parts[2];
-					if (M_log.isDebugEnabled()) M_log.debug("setting second presence: " + secondPlacementId);
-					PresenceService.setPresence(secondPlacementId);
+				String requestUserId = req.getParameter("userId");
+				Session session = sessionManager.getCurrentSession();
+				
+				if (requestUserId == null || requestUserId.equals(session.getUserId())) {
+					// compute our courier delivery address: this placement in this session
+					String deliveryId = session.getId() + placementId;
+	
+					// find all deliveries for the requested deivery address
+					List deliveries = CourierService.getDeliveries(deliveryId);
+	
+					// form the reply
+					sendDeliveries(res, deliveries);
+	
+					// refresh our presence at the location (placement)
+					if (M_log.isDebugEnabled()) M_log.debug("setting presence: " + placementId);
+					PresenceService.setPresence(placementId);
+	
+					// register another presence if present
+					if (parts.length == 3)
+					{
+						String secondPlacementId = parts[2];
+						if (M_log.isDebugEnabled()) M_log.debug("setting second presence: " + secondPlacementId);
+						PresenceService.setPresence(secondPlacementId);
+					}
+				} else {
+					//This courier request was not meant for this user (i.e., session), so we won't honour it
+					M_log.debug("out-of-session courier request: requestUserId=" + requestUserId + " session user=" + session.getUserId());
 				}
 			}
 		}
